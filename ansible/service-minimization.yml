@@ -1,0 +1,42 @@
+---
+# Service Minimization Playbook
+# CIS RHEL 9 Benchmark - Section 2.2
+- name: Disable unnecessary services
+  hosts: all
+  become: yes
+  tasks:
+    - name: Disable CUPS (printing)
+      service:
+        name: cups
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+
+    - name: Disable Avahi (mDNS)
+      service:
+        name: avahi-daemon
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+
+    - name: Disable Postfix (mail)
+      service:
+        name: postfix
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+
+    - name: Disable rpcbind (NFS)
+      service:
+        name: rpcbind
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+
+    - name: Remove unnecessary packages
+      dnf:
+        name:
+          - telnet
+          - tftp
+          - vsftpd
+        state: absent

@@ -1,0 +1,35 @@
+---
+# Firewall Configuration Playbook
+# CIS RHEL 9 Benchmark - Section 3.4
+- name: Configure firewalld
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure firewalld is installed
+      dnf:
+        name: firewalld
+        state: present
+
+    - name: Start and enable firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+
+    - name: Set default zone to drop
+      command: firewall-cmd --set-default-zone=drop
+
+    - name: Allow SSH (custom port)
+      firewalld:
+        port: 2222/tcp
+        permanent: yes
+        state: enabled
+
+    - name: Allow HTTPS
+      firewalld:
+        service: https
+        permanent: yes
+        state: enabled
+
+    - name: Reload firewalld
+      command: firewall-cmd --reload

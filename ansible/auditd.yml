@@ -1,0 +1,46 @@
+---
+# Audit Logging Playbook
+# CIS RHEL 9 Benchmark - Section 4.1
+- name: Configure auditd
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure auditd is installed
+      dnf:
+        name: audit
+        state: present
+
+    - name: Start and enable auditd
+      service:
+        name: auditd
+        state: started
+        enabled: yes
+
+    - name: Monitor authentication events
+      lineinfile:
+        path: /etc/audit/rules.d/hardening.rules
+        line: '-w /var/log/faillog -p wa -k auth_events'
+        create: yes
+
+    - name: Monitor sudo usage
+      lineinfile:
+        path: /etc/audit/rules.d/hardening.rules
+        line: '-w /etc/sudoers -p wa -k sudoers_changes'
+
+    - name: Monitor file permission changes
+      lineinfile:
+        path: /etc/audit/rules.d/hardening.rules
+        line: '-a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -k perm_changes'
+
+    - name: Monitor user and group changes
+      lineinfile:
+        path: /etc/audit/rules.d/hardening.rules
+        line: '-w /etc/passwd -p wa -k user_changes'
+
+    - name: Monitor shadow file
+      lineinfile:
+        path: /etc/audit/rules.d/hardening.rules
+        line: '-w /etc/shadow -p wa -k shadow_changes'
+
+    - name: Reload audit rules
+      command: augenrules --load

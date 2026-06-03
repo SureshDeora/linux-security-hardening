@@ -1,0 +1,9 @@
+---
+# Master Playbook — Run all hardening at once
+# Usage: ansible-playbook -i inventory.ini site.yml
+- import_playbook: ansible/ssh-hardening.yml
+- import_playbook: ansible/selinux.yml
+- import_playbook: ansible/firewall.yml
+- import_playbook: ansible/auditd.yml
+- import_playbook: ansible/service-minimization.yml
+- import_playbook: ansible/fail2ban.yml

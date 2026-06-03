@@ -1,0 +1,27 @@
+---
+# SELinux Enforcement Playbook
+# CIS RHEL 9 Benchmark - Section 1.6
+- name: Configure SELinux
+  hosts: all
+  become: yes
+  tasks:
+    - name: Ensure SELinux is installed
+      dnf:
+        name: libselinux
+        state: present
+
+    - name: Set SELinux to enforcing in config
+      lineinfile:
+        path: /etc/selinux/config
+        regexp: '^SELINUX='
+        line: 'SELINUX=enforcing'
+
+    - name: Set SELinux policy to targeted
+      lineinfile:
+        path: /etc/selinux/config
+        regexp: '^SELINUXTYPE='
+        line: 'SELINUXTYPE=targeted'
+
+    - name: Enable SELinux at runtime
+      command: setenforce 1
+      ignore_errors: yes
